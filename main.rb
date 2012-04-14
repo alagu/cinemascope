@@ -1,6 +1,7 @@
-require './lib'
 require 'sinatra'
-require 'pp'
+require 'sinatra/cookies'
+require 'sinatra/base'
+require './lib'
 
 #curl -F 'access_token=AAAE2kaTFCrYBAD0cZC8OtzOqD2kT8QWIHpoaxaGuRyoUZAbJd8RRL4aTvZCSMh8fnMjnc8AErL4PLEbQJQzYKiBuC9zZCZBUaEXHMR7TSJAZDZD' \
 #     -F 'movie=http://movies.alagu.net/Oru_Kal_Oru_Kannadi.html' \
@@ -8,7 +9,7 @@ require 'pp'
 #
 
 get '/' do
-  "Hello"
+  haml :index, :format => :html5
 end
 
 get '/auth' do
@@ -18,7 +19,6 @@ end
 
 get '/callback' do
   client  = get_fb_client
-  puts "Callback"
   client.authorization_code = params[:code].to_s
   begin
     access_token = client.access_token! :client_auth_body
@@ -29,11 +29,18 @@ get '/callback' do
     puts e.response
   end
   
-  response.set_cookie "access_token=#{access_token}"
+  cookies[:access_token] = access_token
   
   redirect '/movies'
 end
 
-get '/movies' do
-  "Hello #{request.cookies['access_token']}"
+get '/movie/:movie_name' do
+  movie_details = fetch_movie(params[:movie_name])
+  @movie = movie_details
+  haml :movie, :format => :html5
+end
+
+post '/watched' do
+  url = "http://movies.alagu.net/movie/#{params[:movie]}"
+  return movie_watched(params[:movie], cookies[:access_token])
 end
