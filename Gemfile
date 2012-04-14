@@ -1,2 +1,5 @@
 gem 'sinatra'
 gem 'fb_graph'
+gem 'mongodb'
+gem 'json'
+gem 'haml'
