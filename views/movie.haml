@@ -1,0 +1,14 @@
+%title= @movie[:name]
+
+%div#movie
+  %div#movie-image
+    %img{:src => @movie[:image]}
+  %div#movie-name
+    %h1= @movie[:name]
+  %div#description= @movie[:desc]
+  
+  
+%form{:method=>'post', :action=>'/watched'}
+  %div
+    %input{:type=>'hidden','name'=>'movie','value'=>params[:movie_name]}
+  %input{:type=>'submit',:value=>'I Watched it now'}
